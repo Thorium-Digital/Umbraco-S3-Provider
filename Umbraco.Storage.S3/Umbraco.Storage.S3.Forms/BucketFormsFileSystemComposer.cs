@@ -7,6 +7,7 @@ using Umbraco.Core.IO;
 using Umbraco.Core.Logging;
 using Umbraco.Forms.Core.Components;
 using Umbraco.Forms.Data.FileSystem;
+using Umbraco.Storage.S3.Extensions;
 using Umbraco.Storage.S3.Services;
 
 namespace Umbraco.Storage.S3.Forms
@@ -47,6 +48,7 @@ namespace Umbraco.Storage.S3.Forms
             var bucketHostName = ConfigurationManager.AppSettings[$"{AppSettingsKey}:BucketHostname"];
             var bucketPrefix = ConfigurationManager.AppSettings[$"{AppSettingsKey}:FormsPrefix"];
             var region = ConfigurationManager.AppSettings[$"{AppSettingsKey}:Region"];
+            var cannedACL = ConfigurationManager.AppSettings[$"{AppSettingsKey}:CannedACL"];
             bool.TryParse(ConfigurationManager.AppSettings[$"{AppSettingsKey}:DisableVirtualPathProvider"], out var disableVirtualPathProvider);
 
             if (string.IsNullOrEmpty(bucketName))
@@ -67,7 +69,7 @@ namespace Umbraco.Storage.S3.Forms
                 BucketHostName = bucketHostName,
                 BucketPrefix = bucketPrefix.Trim(Delimiters),
                 Region = region,
-                CannedACL = new S3CannedACL("public-read"),
+                CannedACL = AclExtensions.ParseCannedAcl(cannedACL),
                 ServerSideEncryptionMethod = "",
                 DisableVirtualPathProvider = disableVirtualPathProvider
             };

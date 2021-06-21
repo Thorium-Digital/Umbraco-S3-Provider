@@ -4,6 +4,7 @@ using Umbraco.Core;
 using Umbraco.Core.Composing;
 using Umbraco.Core.Exceptions;
 using Umbraco.Core.Logging;
+using Umbraco.Storage.S3.Extensions;
 using Umbraco.Storage.S3.Services;
 
 namespace Umbraco.Storage.S3.Media
@@ -45,6 +46,7 @@ namespace Umbraco.Storage.S3.Media
             var bucketHostName = ConfigurationManager.AppSettings[$"{AppSettingsKey}:BucketHostname"];
             var bucketPrefix = ConfigurationManager.AppSettings[$"{AppSettingsKey}:MediaPrefix"];
             var region = ConfigurationManager.AppSettings[$"{AppSettingsKey}:Region"];
+            var cannedACL = ConfigurationManager.AppSettings[$"{AppSettingsKey}:CannedACL"];
             bool.TryParse(ConfigurationManager.AppSettings[$"{AppSettingsKey}:DisableVirtualPathProvider"], out var disableVirtualPathProvider);
 
             if (string.IsNullOrEmpty(bucketName))
@@ -65,7 +67,7 @@ namespace Umbraco.Storage.S3.Media
                 BucketHostName = bucketHostName,
                 BucketPrefix = bucketPrefix.Trim(Delimiters),
                 Region = region,
-                CannedACL = new S3CannedACL("public-read"),
+                CannedACL = AclExtensions.ParseCannedAcl(cannedACL),
                 ServerSideEncryptionMethod = "",
                 DisableVirtualPathProvider = disableVirtualPathProvider
             };
